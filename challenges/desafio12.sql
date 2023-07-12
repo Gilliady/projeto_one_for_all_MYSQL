@@ -1,12 +1,14 @@
 SELECT 
-	CASE 
-		WHEN usuario_idade <= 30 THEN ('Até 30 anos')
-        WHEN usuario_idade BETWEEN 31 AND 60 THEN ('Entre 31 e 60 anos')
-        ELSE ('Maior de 60 anos')
-	END as faixa_etaria,
-		COUNT(DISTINCT usuario_id) as total_pessoas_usuarias,
-        COUNT(mf.musica_id) as total_favoritadas
-	FROM usuarios AS u
-	LEFT JOIN musicas_favoritadas AS mf USING (usuario_id)
-		GROUP BY   faixa_etaria
-        ORDER BY faixa_etaria;
+	artista_nome as artista,
+    CASE
+		WHEN COUNT(mf.musica_id) >= 5 THEN ('A')
+        WHEN COUNT(mf.musica_id) IN (3, 4) THEN ('B')
+        WHEN COUNT(mf.musica_id)  IN (1, 2) THEN ('C')
+		ELSE ('-')
+		END ranking
+    FROM musicas_favoritadas AS mf
+    RIGHT JOIN musicas AS m USING (musica_id)
+    INNER JOIN albuns AS al USING (album_id)
+    INNER JOIN artistas AS a USING (artista_id)
+    GROUP BY artista_nome
+    ORDER BY COUNT(mf.musica_id) DESC, artista_nome ASC;
